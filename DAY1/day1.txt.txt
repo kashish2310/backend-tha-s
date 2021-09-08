@@ -1,0 +1,88 @@
+127.0.0.1:6379> SET name kashi
+OK
+127.0.0.1:6379> GET name
+"kashi"
+127.0.0.1:6379> SET age 21
+OK
+127.0.0.1:6379> DEL age
+(integer) 1
+127.0.0.1:6379> EXISTS name
+(integer) 1
+127.0.0.1:6379> KEYS *
+1) "name"
+127.0.0.1:6379> FLUSHALL
+OK
+127.0.0.1:6379> KEYS *
+(empty list or set)
+127.0.0.1:6379> SET name kashi
+OK
+127.0.0.1:6379> ttl name
+(integer) -1
+127.0.0.1:6379> expire name 10
+(integer) 1
+127.0.0.1:6379> ttl name
+(integer) 6
+127.0.0.1:6379> ttl name
+(integer) -2
+127.0.0.1:6379> KEYS *
+(empty list or set)
+127.0.0.1:6379> FLUSHALL
+OK
+127.0.0.1:6379> lpush friends shruti
+(integer) 1
+127.0.0.1:6379> GET friends
+(error) WRONGTYPE Operation against a key holding the wrong kind of value
+127.0.0.1:6379> LRANGE friends 0 -1
+1) "shruti"
+127.0.0.1:6379> rpush friends iqra
+(integer) 2
+127.0.0.1:6379> LRANGE friends 0 -1
+1) "shruti"
+2) "iqra"
+127.0.0.1:6379> lpush friends anshu
+(integer) 3
+127.0.0.1:6379> LRANGE friends 0 -1
+1) "anshu"
+2) "shruti"
+3) "iqra"
+127.0.0.1:6379> KEYS *
+1) "friends"
+127.0.0.1:6379> lpop friends
+"anshu"
+127.0.0.1:6379> LRANGE friends 0 -1
+1) "shruti"
+2) "iqra"
+127.0.0.1:6379> SADD hobbies "singing"
+(integer) 1
+127.0.0.1:6379> SADD  hobbies "dancing"
+(integer) 1
+127.0.0.1:6379> SADD hobbies "singing"
+(integer) 0
+127.0.0.1:6379> SMEMBERS hobbies
+1) "dancing"
+2) "singing"
+127.0.0.1:6379> HSET person name kashi
+(integer) 1
+127.0.0.1:6379> HGET person name
+"kashi"
+127.0.0.1:6379> HGETALL person
+1) "name"
+2) "kashi"
+127.0.0.1:6379> HSET person age 21
+(integer) 1
+127.0.0.1:6379> HGETALL person
+1) "name"
+2) "kashi"
+3) "age"
+4) "21"
+127.0.0.1:6379> HDEL person age
+(integer) 1
+127.0.0.1:6379> HGETALL person
+1) "name"
+2) "kashi"
+127.0.0.1:6379> HEXISTS person name
+(integer) 1
+127.0.0.1:6379> HEXISTS person age
+(integer) 0
+127.0.0.1:6379> LRANGE friends 1 1
+1) "iqra"

@@ -1,0 +1,235 @@
+F:\postgres>psql -U postgres
+Password for user postgres:
+psql (13.4)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# CREATE DATABASE devs;
+CREATE DATABASE
+postgres=# \l
+                                         List of databases
+   Name    |  Owner   | Encoding |      Collate       |       Ctype        |   Access privileges
+-----------+----------+----------+--------------------+--------------------+-----------------------
+ devs      | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ postgres  | postgres | UTF8     | English_India.1252 | English_India.1252 |
+ template0 | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+           |          |          |                    |                    | postgres=CTc/postgres
+ template1 | postgres | UTF8     | English_India.1252 | English_India.1252 | =c/postgres          +
+           |          |          |                    |                    | postgres=CTc/postgres
+(4 rows)
+
+
+postgres=# \c devs
+You are now connected to database "devs" as user "postgres".
+devs=# CREATE TABLE COMPANY(
+devs(# ID INT NOT NULL,
+devs(# NAME CHAR[50],
+devs(# AGE INT NOT NULL,
+devs(# ADDRESS TEXT
+devs(# );
+CREATE TABLE
+devs=# \d
+          List of relations
+ Schema |  Name   | Type  |  Owner
+--------+---------+-------+----------
+ public | company | table | postgres
+(1 row)
+
+
+devs=# \d company
+                  Table "public.company"
+ Column  |      Type      | Collation | Nullable | Default
+---------+----------------+-----------+----------+---------
+ id      | integer        |           | not null |
+ name    | character(1)[] |           |          |
+ age     | integer        |           | not null |
+ address | text           |           |          |
+
+
+devs=# DROP TABLE COMPANY;
+DROP TABLE
+devs=# \d company
+Did not find any relation named "company".
+devs=# \q
+devs=# CREATE SCHEMA mySchema;
+CREATE SCHEMA
+devs=# DROP SCHEMA mySchema CASCADE;
+DROP SCHEMA
+devs=# INSERT INTO COMPANY(ID,NAME,SALARY) VALUES (4, 'JAMES', 70000.00);
+ERROR:  column "salary" of relation "company" does not exist
+LINE 1: INSERT INTO COMPANY(ID,NAME,SALARY) VALUES (4, 'JAMES', 7000...
+                                    ^
+devs=# \D COMPANY
+invalid command \D
+Try \? for help.
+devs=# \d company
+                  Table "public.company"
+ Column  |      Type      | Collation | Nullable | Default
+---------+----------------+-----------+----------+---------
+ id      | integer        |           | not null |
+ name    | character(1)[] |           |          |
+ age     | integer        |           | not null |
+ address | text           |           |          |
+
+
+devs=# SELECT *FROM company;
+ id | name | age | address
+----+------+-----+---------
+(0 rows)
+
+
+devs=# SELECT * FROM COMPANY;
+ id | name | age | address
+----+------+-----+---------
+(0 rows)
+
+
+devs=# INSERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, 'JAMES', 27 , 'TOKYO');
+ERROR:  malformed array literal: "JAMES"
+LINE 1: ...SERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, 'JAMES', 2...
+                                                             ^
+DETAIL:  Array value must start with "{" or dimension information.
+devs=#  INSERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, "JAMES", 27 , 'TOKYO');
+ERROR:  column "JAMES" does not exist
+LINE 1: ...SERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, "JAMES", 2...
+                                                             ^
+devs=# INSERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4,"JAMES",27,'TOKYO');
+ERROR:  column "JAMES" does not exist
+LINE 1: ...NSERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4,"JAMES",27...
+                                                             ^
+devs=# INSERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, 'James', 27 , 'TOKYO');
+ERROR:  malformed array literal: "James"
+LINE 1: ...SERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, 'James', 2...
+                                                             ^
+DETAIL:  Array value must start with "{" or dimension information.
+devs=# INSERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, {Kashi}, 27 , 'TOKYO');
+ERROR:  syntax error at or near "{"
+LINE 1: ...SERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, {Kashi}, 2...
+                                                             ^
+devs=# INSERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, {"JAMES"}, 27 , 'TOKYO');
+ERROR:  syntax error at or near "{"
+LINE 1: ...SERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, {"JAMES"},...
+                                                             ^
+devs=# INSERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, '{James}', 27 , 'TOKYO');
+ERROR:  value too long for type character(1)
+devs=# INSERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, 'K', 27 , 'TOKYO');
+ERROR:  malformed array literal: "K"
+LINE 1: ...SERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, 'K', 27 , ...
+                                                             ^
+DETAIL:  Array value must start with "{" or dimension information.
+devs=# INSERT INTO COMPANY(ID,NAME,AGE,ADDRESS) VALUES (4, '{K}', 27 , 'TOKYO');
+INSERT 0 1
+devs=# \d company
+                  Table "public.company"
+ Column  |      Type      | Collation | Nullable | Default
+---------+----------------+-----------+----------+---------
+ id      | integer        |           | not null |
+ name    | character(1)[] |           |          |
+ age     | integer        |           | not null |
+ address | text           |           |          |
+
+
+devs=# SELECT * FROM company;
+ id | name | age | address
+----+------+-----+---------
+  4 | {K}  |  27 | TOKYO
+(1 row)
+
+
+devs=# SELECT (13+5) AS SUM;
+ sum
+-----
+  18
+(1 row)
+
+
+devs=# SELECT COUNT(*) AS "RECORDS" FROM COMPANY;
+ RECORDS
+---------
+       1
+(1 row)
+
+
+devs=# SELECT CURRENT_TIMESTAMP;
+        current_timestamp
+----------------------------------
+ 2021-09-08 21:22:30.312284+05:30
+(1 row)
+
+
+devs=# SELECT * FROM COMPANY WHERE AGE >=20 AND ID>=5;
+ id | name | age | address
+----+------+-----+---------
+(0 rows)
+
+
+devs=#  SELECT * FROM COMPANY WHERE NAME LIKE 'K%';
+ERROR:  operator does not exist: character[] ~~ unknown
+LINE 1: SELECT * FROM COMPANY WHERE NAME LIKE 'K%';
+                                         ^
+HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+devs=# SELECT * FROM COMPANY WHERE ADDRESS LIKE 'T%';
+ id | name | age | address
+----+------+-----+---------
+  4 | {K}  |  27 | TOKYO
+(1 row)
+
+
+devs=# \d company;
+                  Table "public.company"
+ Column  |      Type      | Collation | Nullable | Default
+---------+----------------+-----------+----------+---------
+ id      | integer        |           | not null |
+ name    | character(1)[] |           |          |
+ age     | integer        |           | not null |
+ address | text           |           |          |
+
+
+devs=# SELECT * FROM COMPANY WHERE NAME ::TEXT LIKE 'K%';
+ id | name | age | address
+----+------+-----+---------
+(0 rows)
+
+
+devs=# SELECT * FROM COMPANY WHERE AGE IN (23,26);
+ id | name | age | address
+----+------+-----+---------
+(0 rows)
+
+
+devs=# SELECT * FROM COMPANY WHERE AGE NOT IN (23,26);
+ id | name | age | address
+----+------+-----+---------
+  4 | {K}  |  27 | TOKYO
+(1 row)
+
+
+devs=# UPDATE COMPANY SET AGE = 25 WHERE ID=4;
+UPDATE 1
+devs=# SELECT * FROM COMPANY;
+ id | name | age | address
+----+------+-----+---------
+  4 | {K}  |  25 | TOKYO
+(1 row)
+
+
+devs=# CREATE TABLE customers(
+devs(#    customer_id INT GENERATED ALWAYS AS IDENTITY,
+devs(#    customer_name VARCHAR(255) NOT NULL,
+devs(#    PRIMARY KEY(customer_id)
+devs(# );                                                            /* Primary key is the unique identifier of row in table */
+CREATE TABLE
+devs-#
+devs-# CREATE TABLE contacts(
+devs(#    contact_id INT GENERATED ALWAYS AS IDENTITY,
+devs(#    customer_id INT,
+devs(#    contact_name VARCHAR(255) NOT NULL,
+devs(#    phone VARCHAR(15),
+devs(#    email VARCHAR(100),
+devs(#    PRIMARY KEY(contact_id),
+devs(#    CONSTRAINT fk_customer
+devs(#       FOREIGN KEY(customer_id)
+devs(#   REFERENCES customers(customer_id)
+devs(# );   
